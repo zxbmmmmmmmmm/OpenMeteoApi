@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
@@ -8,6 +7,16 @@
   </PropertyGroup>
   <PropertyGroup>
     <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/zxbmmmmmmmmm/OpenMeteoApi</RepositoryUrl>
+    <Description>Open-Meteo client for .NET</Description>
+    <PackageTags>OpenMeteo Weather Forecast</PackageTags>
+    <Authors>Betta_Fish</Authors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageVersion>1.0.0</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.0" />
