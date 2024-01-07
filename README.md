@@ -1,6 +1,6 @@
 # OpenMeteoApi
 
-[![NuGet](https://img.shields.io/nuget/v/OpenMeteoApi)](https://www.nuget.org/profiles/OpenMeteoApi) [![NuGet](https://img.shields.io/nuget/dt/OpenMeteoApi)](https://www.nuget.org/profiles/OpenMeteoApi)
+[![NuGet](https://img.shields.io/nuget/v/OpenMeteoApi)](https://www.nuget.org/packages/OpenMeteoApi) [![NuGet](https://img.shields.io/nuget/dt/OpenMeteoApi)](https://www.nuget.org/packages/OpenMeteoApi)
 
 An easy-to-use library for getting weather data from [Open-Meteo](https://open-meteo.com/)
 
