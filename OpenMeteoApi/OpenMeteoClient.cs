@@ -1,5 +1,6 @@
 ﻿using OpenMeteoApi.Helpers;
 using OpenMeteoApi.Models;
+using OpenMeteoApi.Models.Geocoding;
 using OpenMeteoApi.Variables;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,16 @@ namespace OpenMeteoApi;
 
 public class OpenMeteoClient
 {
-    public string ForecastApiBase = "https://api.open-meteo.com";
-    public string AirQualityApiBase = "https://air-quality-api.open-meteo.com";
+    public string ForecastApiBase { get; set; } = "https://api.open-meteo.com";
+    public string AirQualityApiBase { get; set; } = "https://air-quality-api.open-meteo.com";
+    public string GeocodingApiBase { get; set; } = "https://geocoding-api.open-meteo.com";
     private const string ForecastEndpoint = "/v1/forecast";
     private const string AirQualityEndpoint = "/v1/air-quality";
+    private const string GeocodingEndpoint = "/v1/search";
 
-    public Dictionary<string, string> ForecastParameters = new();
-    public Dictionary<string, string> AirQualityParameters = new();
+    public Dictionary<string, string> ForecastParameters { get; set; } = new();
+    public Dictionary<string, string> AirQualityParameters { get; set; } = new();
+    public Dictionary<string, string> GeocodingParameters { get; set; } = new();
     private readonly HttpClient _httpClient = new();
 
     #region WeatherForecast
@@ -314,6 +318,29 @@ public class OpenMeteoClient
         var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, ub.Uri));
         var str = await result.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<AirQualityData>(str)!;
+    }
+    #endregion
+    #region Geocoding
+    public async Task<List<Geolocation>> GetLocationsByName(string name,int? count=null, params KeyValuePair<string, string>[] parameters)
+    {
+        var ub = new UriBuilder(GeocodingApiBase + GeocodingEndpoint);
+        ub.AddQuery("name", name);
+        if(count is not null)
+        {
+            ub.AddQuery("count", count.Value.ToString());
+        }
+
+        foreach (var param in GeocodingParameters)
+        {
+            ub.AddQuery(param.Key, param.Value);
+        }
+        foreach (var param in parameters)
+        {
+            ub.AddQuery(param.Key, param.Value);
+        }
+        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, ub.Uri));
+        var str = await result.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<GeolocationResponse>(str)!.Results!;
     }
     #endregion
 }
