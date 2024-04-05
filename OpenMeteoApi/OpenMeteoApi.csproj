@@ -16,8 +16,16 @@
     <Authors>Betta_Fish</Authors>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Version>1.1.0</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\QWeatherApi\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
