@@ -176,6 +176,63 @@ public class OpenMeteoClient
     }
 
     /// <summary>
+    /// Get hourly weather forecast
+    /// </summary>
+    /// <param name="latitude"></param>
+    /// <param name="longitude"></param>
+    /// <param name="variables"></param>
+    /// <returns></returns>
+    public async Task<List<MinutelyForecastItem>> GetMinutelyForecasts(double latitude, double longitude, params string[] variables)
+    {
+        variables = (variables.Length is 0) ? MinutelyVariables.Standard : variables;
+        var data = await GetWeatherForecastData(latitude, longitude, minutelyVariables: variables);
+        var minutely = data?.MinutelyForecast;
+        var result = new List<MinutelyForecastItem>();
+
+        for (var i = 0; i < minutely?.WeatherCode?.Length; i++)
+        {
+            var item = new MinutelyForecastItem
+            {
+                ApparentTemperature = minutely.ApparentTemperature?[i],
+                Cape = minutely.Cape?[i],
+                ShortwaveRadiation = minutely.ShortwaveRadiation?[i], 
+                ShortwaveRadiationInstant = minutely.ShortwaveRadiationInstant?[i],
+                DewPoint2m = minutely.DewPoint2m?[i],
+                Snowfall = minutely.Snowfall?[i],
+                DiffuseRadiation = minutely.DiffuseRadiation?[i],
+                DiffuseRadiationInstant = minutely.DiffuseRadiationInstant?[i],
+                DirectNormalIrradiance = minutely.DirectNormalIrradiance?[i],
+                DirectNormalIrradianceInstant = minutely.DirectNormalIrradianceInstant?[i],
+                DirectRadiation = minutely.DirectRadiation?[i],
+                DirectRadiationInstant = minutely.DirectRadiationInstant?[i],
+                FreezingLevelHeight = minutely.FreezingLevelHeight?[i],
+                IsDay = minutely.IsDay?[i],
+                Precipitation = minutely.Precipitation?[i],
+                Rain = minutely.Rain?[i],
+                RelativeHumidity2m = minutely.RelativeHumidity2m?[i],
+                SunshineDuration = minutely.SunshineDuration?[i],
+                WindSpeed10m = minutely.WindSpeed10m?[i],
+                Temperature2m = minutely.Temperature2m?[i],
+                TerrestrialRadiation = minutely.TerrestrialRadiation?[i],
+                TerrestrialRadiationInstant = minutely.TerrestrialRadiationInstant?[i],
+                Time = minutely.Time?[i],
+                Visibility = minutely.Visibility?[i],
+                WeatherCode = minutely.WeatherCode?[i],
+                WindDirection10m = minutely.WindDirection10m?[i],
+                WindDirection80m = minutely.WindDirection80m?[i],
+                WindGusts10m = minutely.WindGusts10m?[i],
+                WindSpeed80m = minutely.WindSpeed80m?[i],
+                GlobalTiltedIrradiance = minutely.GlobalTiltedIrradiance?[i],
+                GlobalTiltedIrradianceInstant = minutely.GlobalTiltedIrradianceInstant?[i],
+                SnowfallHeight = minutely.SnowfallHeight?[i],
+                LightningPotential = minutely.LightningPotential?[i]
+            };
+            result.Add(item);
+        }
+        return result;
+    }
+
+    /// <summary>
     /// Get weather data with custom variables
     /// </summary>
     /// <param name="latitude"></param>
@@ -191,6 +248,7 @@ public class OpenMeteoClient
         string[]? currentVariables = null,
         string[]? dailyVariables = null,
         string[]? hourlyVariables = null,
+        string[]? minutelyVariables = null,
         params KeyValuePair<string, string>[] parameters)
     {
         var ub = new UriBuilder(ForecastApiBase + ForecastEndpoint);
@@ -202,6 +260,8 @@ public class OpenMeteoClient
             ub.AddQuery("daily", dailyVariables);
         if (hourlyVariables is not null)
             ub.AddQuery("hourly", hourlyVariables);
+        if (minutelyVariables is not null)
+            ub.AddQuery("minutely_15", minutelyVariables);
         foreach (var param in ForecastParameters)
         {
             ub.AddQuery(param.Key, param.Value);

@@ -31,7 +31,14 @@ public class WeatherForecastTests
         Console.WriteLine(hourly[0].WeatherCode);
         Assert.IsNotNull(hourly[0]);
     }
-
+    [TestMethod]
+    public async Task MinutelyForecastsTest()
+    {
+        var client = new OpenMeteoClient();
+        var minutely = await client.GetMinutelyForecasts(52.5, 13.4);
+        Console.WriteLine(minutely[0].WeatherCode);
+        Assert.IsNotNull(minutely[0]);
+    }
     [TestMethod]
     public async Task CustomWeatherDataTest()
     {

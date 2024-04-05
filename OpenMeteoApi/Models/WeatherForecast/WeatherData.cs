@@ -37,6 +37,12 @@ public class WeatherData
     [JsonPropertyName("hourly")]
     public HourlyForecast? HourlyForecast { get; set; }
 
+    [JsonPropertyName("minutely_15")]
+    public MinutelyForecast? MinutelyForecast { get; set; }
+
+    [JsonPropertyName("minutely_15_units")]
+    public MinutelyForecastUnits? MinutelyForecastUnits { get; set; }
+
     [JsonPropertyName("daily_units")]
     public DailyForecastUnits? DailyForecastUnits { get; set; }
 
