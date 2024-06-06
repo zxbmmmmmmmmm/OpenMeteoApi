@@ -53,4 +53,17 @@ public class WeatherForecastTests
         Assert.IsNotNull(data.DailyForecast?.WeatherCode);
         Assert.IsNotNull(data.HourlyForecast?.WeatherCode);
     }
+    [TestMethod]
+    public async Task HistoricalWeatherDataTest()
+    {
+        var client = new OpenMeteoClient();
+        var data = await client.GetHistoricalWeatherData(52.5, 13.4,
+           startDate:DateTime.Parse("2024-5-25"),endDate:DateTime.Parse("2024-6-1"), dailyVariables: DailyVariables.All, hourlyVariables: HourlyVariables.All);
+        Console.WriteLine(data.CurrentWeather?.WeatherCode);
+        Console.WriteLine(data.DailyForecast?.WeatherCode?[0]);//Array
+        Console.WriteLine(data.HourlyForecast?.WeatherCode?[0]);//Array
+
+        Assert.IsNotNull(data.DailyForecast?.WeatherCode);
+        Assert.IsNotNull(data.HourlyForecast?.WeatherCode);
+    }
 }

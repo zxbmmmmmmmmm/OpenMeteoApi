@@ -20,13 +20,17 @@ public class OpenMeteoClient
     public string ForecastApiBase { get; set; } = "https://api.open-meteo.com";
     public string AirQualityApiBase { get; set; } = "https://air-quality-api.open-meteo.com";
     public string GeocodingApiBase { get; set; } = "https://geocoding-api.open-meteo.com";
+    public string HistoricalWeatherApiBase { get; set; } = "https://archive-api.open-meteo.com";
+
     private const string ForecastEndpoint = "/v1/forecast";
     private const string AirQualityEndpoint = "/v1/air-quality";
     private const string GeocodingEndpoint = "/v1/search";
+    private const string HistoricalWeatherEndPoint = "/v1/archive";
 
     public Dictionary<string, string> ForecastParameters { get; set; } = new();
     public Dictionary<string, string> AirQualityParameters { get; set; } = new();
     public Dictionary<string, string> GeocodingParameters { get; set; } = new();
+    public Dictionary<string, string> HistoricalWeatherParameters { get; set; } = new();
     private readonly HttpClient _httpClient = new();
 
     #region WeatherForecast
@@ -401,6 +405,49 @@ public class OpenMeteoClient
         var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, ub.Uri));
         var str = await result.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<GeolocationResponse>(str)!.Results!;
+    }
+    #endregion
+    #region HistoricalWeather
+    /// <summary>
+    /// Get historical weather data with custom variables
+    /// </summary>
+    /// <param name="latitude"></param>
+    /// <param name="longitude"></param>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <param name="dailyVariables"></param>
+    /// <param name="hourlyVariables"></param>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
+    public async Task<WeatherData> GetHistoricalWeatherData(
+        double latitude,
+        double longitude,
+        DateTime startDate,
+        DateTime endDate,
+        string[]? dailyVariables = null,
+        string[]? hourlyVariables = null,
+        params KeyValuePair<string, string>[] parameters)
+    {
+        var ub = new UriBuilder(HistoricalWeatherApiBase + HistoricalWeatherEndPoint);
+        ub.AddQuery("latitude", latitude.ToString(CultureInfo.InvariantCulture));
+        ub.AddQuery("longitude", longitude.ToString(CultureInfo.InvariantCulture));
+        ub.AddQuery("start_date", startDate.ToString("yyyy-MM-dd",CultureInfo.InvariantCulture));
+        ub.AddQuery("end_date", endDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        if (dailyVariables is not null)
+            ub.AddQuery("daily", dailyVariables);
+        if (hourlyVariables is not null)
+            ub.AddQuery("hourly", hourlyVariables);
+        foreach (var param in HistoricalWeatherParameters)
+        {
+            ub.AddQuery(param.Key, param.Value);
+        }
+        foreach (var param in parameters)
+        {
+            ub.AddQuery(param.Key, param.Value);
+        }
+        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, ub.Uri));
+        var str = await result.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<WeatherData>(str)!;
     }
     #endregion
 }
