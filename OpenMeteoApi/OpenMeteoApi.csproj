@@ -17,8 +17,8 @@
     <Authors>Betta_Fish</Authors>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageVersion>1.2.0</PackageVersion>
-    <Version>1.2.0</Version>
+    <PackageVersion>1.3.0</PackageVersion>
+    <Version>1.3.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
