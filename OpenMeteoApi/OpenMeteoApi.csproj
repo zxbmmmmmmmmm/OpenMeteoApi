@@ -4,6 +4,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
   <PropertyGroup>
     <Nullable>enable</Nullable>
@@ -30,4 +31,7 @@
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="8.0.4" />
   </ItemGroup>
+  <PropertyGroup>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
 </Project>

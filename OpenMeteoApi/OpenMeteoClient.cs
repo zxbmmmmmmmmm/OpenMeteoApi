@@ -246,6 +246,7 @@ public class OpenMeteoClient
     /// <param name="currentVariables"></param>
     /// <param name="dailyVariables"></param>
     /// <param name="hourlyVariables"></param>
+    /// <param name="minutelyVariables"></param>
     /// <param name="parameters"></param>
     /// <returns></returns>
     public async Task<WeatherData> GetWeatherForecastData(
@@ -283,7 +284,7 @@ public class OpenMeteoClient
         var urlString = QueryHelpers.AddQueryString(ForecastApiBase + ForecastEndpoint, collection);
         var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri(urlString)));
         var str = await result.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<WeatherData>(str)!;
+        return (JsonSerializer.Deserialize(str, typeof(WeatherData), SourceGenerationContext.Default) as WeatherData)!;
     }
     #endregion
     #region AirQuality
@@ -394,7 +395,7 @@ public class OpenMeteoClient
 
         var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri(urlString)));
         var str = await result.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<AirQualityData>(str)!;
+        return (JsonSerializer.Deserialize(str,typeof(AirQualityData),SourceGenerationContext.Default)! as AirQualityData)!;
     }
     #endregion
     #region Geocoding
@@ -421,7 +422,7 @@ public class OpenMeteoClient
 
         var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri(urlString)));
         var str = await result.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<GeolocationResponse>(str)!.Results!;
+        return (JsonSerializer.Deserialize(str,typeof(GeolocationResponse),SourceGenerationContext.Default) as GeolocationResponse)!.Results!;
     }
     #endregion
     #region HistoricalWeather
@@ -467,7 +468,7 @@ public class OpenMeteoClient
         var urlString = QueryHelpers.AddQueryString(HistoricalWeatherApiBase + HistoricalWeatherEndPoint, collection);
         var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri(urlString)));
         var str = await result.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<WeatherData>(str)!;
+        return (JsonSerializer.Deserialize(str, typeof(WeatherData), SourceGenerationContext.Default) as WeatherData)!;
     }
     #endregion
 }
