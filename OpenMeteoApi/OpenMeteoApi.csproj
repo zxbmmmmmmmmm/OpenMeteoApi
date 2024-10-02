@@ -16,9 +16,10 @@
     <Authors>Betta_Fish</Authors>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageVersion>1.1.0</PackageVersion>
-    <Version>1.1.0</Version>
+    <PackageVersion>1.2.0</PackageVersion>
+    <Version>1.2.0</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\QWeatherApi\README.md">
@@ -27,6 +28,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
   </ItemGroup>
 </Project>
