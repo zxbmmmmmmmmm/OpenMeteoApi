@@ -4,6 +4,7 @@ using OpenMeteoApi.Models.Geocoding;
 using OpenMeteoApi.Variables;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -12,6 +13,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Web;
+using System.Xml.Linq;
 
 namespace OpenMeteoApi;
 
@@ -255,26 +257,31 @@ public class OpenMeteoClient
         string[]? minutelyVariables = null,
         params KeyValuePair<string, string>[] parameters)
     {
-        var ub = new UriBuilder(ForecastApiBase + ForecastEndpoint);
-        ub.AddQuery("latitude", latitude.ToString(CultureInfo.InvariantCulture));
-        ub.AddQuery("longitude", longitude.ToString(CultureInfo.InvariantCulture));
+        var collection = new Dictionary<string, string>
+        {
+            { "latitude", latitude.ToString(CultureInfo.InvariantCulture) },
+            { "longitude", longitude.ToString(CultureInfo.InvariantCulture) }
+        };
+
         if (currentVariables is not null)
-            ub.AddQuery("current", currentVariables);
+            collection.Add("current", string.Join(",", currentVariables));
         if (dailyVariables is not null)
-            ub.AddQuery("daily", dailyVariables);
+            collection.Add("daily", string.Join(",", dailyVariables));
         if (hourlyVariables is not null)
-            ub.AddQuery("hourly", hourlyVariables);
+            collection.Add("hourly", string.Join(",", hourlyVariables));
         if (minutelyVariables is not null)
-            ub.AddQuery("minutely_15", minutelyVariables);
+            collection.Add("minutely_15", string.Join(",", minutelyVariables));
+
         foreach (var param in ForecastParameters)
         {
-            ub.AddQuery(param.Key, param.Value);
+            collection.Add(param.Key, param.Value);
         }
         foreach (var param in parameters)
         {
-            ub.AddQuery(param.Key, param.Value);
+            collection.Add(param.Key, param.Value);
         }
-        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, ub.Uri));
+        var urlString = QueryHelpers.AddQueryString(ForecastApiBase + ForecastEndpoint, collection);
+        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri(urlString)));
         var str = await result.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<WeatherData>(str)!;
     }
@@ -364,22 +371,28 @@ public class OpenMeteoClient
         string[]? hourlyVariables = null,
         params KeyValuePair<string, string>[] parameters)
     {
-        var ub = new UriBuilder(AirQualityApiBase + AirQualityEndpoint);
-        ub.AddQuery("latitude", latitude.ToString(CultureInfo.InvariantCulture));
-        ub.AddQuery("longitude", longitude.ToString(CultureInfo.InvariantCulture));
+        var collection = new Dictionary<string,string>
+        {
+            { "latitude", latitude.ToString(CultureInfo.InvariantCulture) },
+            { "longitude", longitude.ToString(CultureInfo.InvariantCulture) }
+        };
         if (currentVariables is not null)
-            ub.AddQuery("current", currentVariables);
+            collection.Add("current", string.Join(",", currentVariables));
         if (hourlyVariables is not null)
-            ub.AddQuery("hourly", hourlyVariables);
+            collection.Add("hourly", string.Join(",", hourlyVariables));
         foreach (var param in AirQualityParameters)
         {
-            ub.AddQuery(param.Key, param.Value);
+            collection.Add(param.Key, param.Value);
         }
         foreach (var param in parameters)
         {
-            ub.AddQuery(param.Key, param.Value);
+            collection.Add(param.Key, param.Value);
         }
-        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, ub.Uri));
+
+        var urlString = QueryHelpers.AddQueryString(AirQualityApiBase + AirQualityEndpoint, collection);
+
+
+        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri(urlString)));
         var str = await result.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<AirQualityData>(str)!;
     }
@@ -387,22 +400,26 @@ public class OpenMeteoClient
     #region Geocoding
     public async Task<List<Geolocation>> GetLocationsByName(string name,int? count=null, params KeyValuePair<string, string>[] parameters)
     {
-        var ub = new UriBuilder(GeocodingApiBase + GeocodingEndpoint);
-        ub.AddQuery("name", name);
+
+        var collection = new Dictionary<string, string>
+        {
+            { "name",name },
+        };
         if(count is not null)
         {
-            ub.AddQuery("count", count.Value.ToString());
+            collection.Add("count", count.Value.ToString());
         }
-
         foreach (var param in GeocodingParameters)
         {
-            ub.AddQuery(param.Key, param.Value);
+            collection.Add(param.Key, param.Value);
         }
         foreach (var param in parameters)
         {
-            ub.AddQuery(param.Key, param.Value);
+            collection.Add(param.Key, param.Value);
         }
-        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, ub.Uri));
+        var urlString = QueryHelpers.AddQueryString(GeocodingApiBase + GeocodingEndpoint, collection);
+
+        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri(urlString)));
         var str = await result.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<GeolocationResponse>(str)!.Results!;
     }
@@ -428,24 +445,27 @@ public class OpenMeteoClient
         string[]? hourlyVariables = null,
         params KeyValuePair<string, string>[] parameters)
     {
-        var ub = new UriBuilder(HistoricalWeatherApiBase + HistoricalWeatherEndPoint);
-        ub.AddQuery("latitude", latitude.ToString(CultureInfo.InvariantCulture));
-        ub.AddQuery("longitude", longitude.ToString(CultureInfo.InvariantCulture));
-        ub.AddQuery("start_date", startDate.ToString("yyyy-MM-dd",CultureInfo.InvariantCulture));
-        ub.AddQuery("end_date", endDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        var collection = new Dictionary<string, string>
+        {
+            { "latitude", latitude.ToString(CultureInfo.InvariantCulture) },
+            { "longitude", longitude.ToString(CultureInfo.InvariantCulture) },
+            { "start_date", startDate.ToString("yyyy-MM-dd",CultureInfo.InvariantCulture) },
+            { "end_date", endDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) }
+        };
         if (dailyVariables is not null)
-            ub.AddQuery("daily", dailyVariables);
+            collection.Add("daily", string.Join(",", dailyVariables));
         if (hourlyVariables is not null)
-            ub.AddQuery("hourly", hourlyVariables);
+            collection.Add("hourly", string.Join(",", hourlyVariables));
         foreach (var param in HistoricalWeatherParameters)
         {
-            ub.AddQuery(param.Key, param.Value);
+            collection.Add(param.Key, param.Value);
         }
         foreach (var param in parameters)
         {
-            ub.AddQuery(param.Key, param.Value);
+            collection.Add(param.Key, param.Value);
         }
-        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, ub.Uri));
+        var urlString = QueryHelpers.AddQueryString(HistoricalWeatherApiBase + HistoricalWeatherEndPoint, collection);
+        var result = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri(urlString)));
         var str = await result.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<WeatherData>(str)!;
     }
